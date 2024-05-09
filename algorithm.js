@@ -1,8 +1,8 @@
 /*
  * @Author: yjl
  * @Date: 2024-05-08 09:27:38
- * @LastEditors: yjl
- * @LastEditTime: 2024-05-08 14:22:10
+ * @LastEditors: 杨家乐 2018770090@qq.com
+ * @LastEditTime: 2024-05-09 23:13:59
  * @Description: 描述
  */
 
@@ -171,7 +171,25 @@ function unique(arr1, arr2) {
   return fun(all);
 }
 
-console.log(
-  "去重排序",
-  unique([1,9,3,6,12], [0,2,10,3,12,12])
-);
+console.log("去重排序", unique([1, 9, 3, 6, 12], [0, 2, 10, 3, 12, 12]));
+
+/**
+ * 爬楼梯
+ * 描述：每次爬1或2阶，爬n层有多少种爬法
+ * 理解：整个算法的本质是一个斐那波契数列,也就是说从第三项开始永远是前两项的和
+ * @param {*} n 楼梯总数
+ */
+function climbStairs(n) {
+  if (n == 1 || n == 2) return n; //如果台阶只有1或者2阶梯那就只有这两种走法
+  let a = 1;
+  let b = 2;
+  let sum = 0;
+  for (let i = 3; i <= n; i++) {
+    sum = a + b;
+    a = b;
+    b = sum;
+  }
+  return sum;
+}
+
+console.log("爬楼梯：", climbStairs(4));
