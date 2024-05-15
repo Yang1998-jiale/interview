@@ -1,8 +1,8 @@
 /*
  * @Author: yjl
  * @Date: 2024-05-08 17:47:16
- * @LastEditors: yjl
- * @LastEditTime: 2024-05-15 17:47:52
+ * @LastEditors: 杨家乐 2018770090@qq.com
+ * @LastEditTime: 2024-05-15 21:39:10
  * @Description: 描述
  */
 /**
@@ -155,9 +155,9 @@ function myTimeout(time, ms = 1000, cbk) {
   }
 }
 
-myTimeout(10000, 1000, () => {
-  console.log("我执行了");
-});
+// myTimeout(10000, 1000, () => {
+//   console.log("我执行了");
+// });
 
 /**
  * 返回合大于目标的元素
@@ -353,21 +353,149 @@ Function.prototype.myBind = function (target, ...args1) {
   return bound;
 };
 
-//手写reactive
-function getFun(target, key) {
-  return target[key];
+//数组扁平化
+// Array.prototype.myFlat = function (deep) {
+//   let self = this;
+//   if (!deep) {
+//     deep = 1;
+//   }
+
+//   function flat(target, res, level = 1) {
+//     target.forEach((item) => {
+//       if (Array.isArray(item) && (level <= deep || deep === Infinity)) {
+//         res = [...res, ...flat(item, [], level + 1)];
+//       } else {
+//         res.push(item);
+//       }
+//     });
+//     return res;
+//   }
+//   return flat(self, []);
+// };
+Array.prototype.myFlat = function (deep) {
+  let self = this;
+  if (!deep) {
+    deep = 1;
+  }
+  function flat(target, level = 1) {
+    return target.reduce((per, item) => {
+      if (Array.isArray(item) && (level <= deep || deep == Infinity)) {
+        return [...per, ...flat(item, level + 1)];
+      }
+      return [...per, item];
+    }, []);
+  }
+  return flat(self);
+};
+let arrFlat = [1, 2, [3, 4, [5, 6]]];
+// arrFlat.flat();
+console.log(arrFlat.myFlat());
+console.log(arrFlat.myFlat(1));
+console.log(arrFlat.myFlat(2));
+console.log(arrFlat.myFlat(Infinity));
+// console.log(arrFlat.flat(2));
+// console.log(arrFlat.flat(1));
+// console.log(arrFlat.flat());
+// console.log(arrFlat.myFlat(2));
+
+//写一个链表结构'
+class Node {
+  constructor(val) {
+    this.val = val;
+    this.next = null;
+  }
 }
 
-function reacive(obj) {
-  if (typeof obj !== "object" || obj === null) {
-    return TypeError("not a object");
+class LinkList {
+  constructor() {
+    this.head = null;
+    this.size = 0;
   }
 
-  return createReactive(obj);
+  addNode(value) {
+    let newNode = new Node(value);
+    if (this.head == null) {
+      this.head = newNode;
+    } else {
+      let target = this.head;
+
+      while (target.next !== null) {
+        target = target.next;
+      }
+      target.next = newNode;
+    }
+    console.log(this.head);
+    this.size++;
+  }
+
+  insetNode(value, index) {
+    let newNode = new Node(value);
+    if (index < 0 || index > this.index) {
+      return false;
+    }
+
+    if (index == 0) {
+      newNode.next = this.head;
+      this.head = newNode;
+    } else {
+      let target = this.head;
+      let i = 0;
+      let flag = null;
+      while (i++ < index) {
+        flag = target;
+        target = target.next;
+      }
+      newNode.next = target;
+      flag.next = newNode;
+    }
+    this.size++;
+    return true;
+  }
+
+  removeNode(index) {
+    if (index < 0 || index > this.size) {
+      return false;
+    }
+    let target = this.head;
+    if (index == 0) {
+      this.head = target.next;
+    } else {
+      let i = 0;
+      let flag = null;
+      while (i++ < index) {
+        flag = target;
+        target = target.next;
+      }
+      flag.next = target.next;
+    }
+    this.size--;
+    return target.val;
+  }
+
+  findNode(value) {
+    let target = this.head;
+    while (target.val != value && target != null) {
+      target = target.next;
+    }
+    return target;
+  }
+
+  printLinkList() {
+    let target = this.head;
+    let str = "";
+    while (target !== null) {
+      console.log(target.val);
+      str += target.val + (target.next == null ? "" : "=>");
+      target = target.next;
+    }
+    return str;
+  }
 }
 
-function createReactive(obj) {
-  return new Proxy(obj, {
-    get: getFun,
-  });
-}
+const list = new LinkList();
+list.addNode(1);
+list.addNode(2);
+list.addNode(3);
+list.insetNode(4, 1);
+list.removeNode(2)
+console.log(list.printLinkList());

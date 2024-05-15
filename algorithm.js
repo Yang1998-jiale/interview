@@ -2,7 +2,7 @@
  * @Author: yjl
  * @Date: 2024-05-08 09:27:38
  * @LastEditors: 杨家乐 2018770090@qq.com
- * @LastEditTime: 2024-05-09 23:13:59
+ * @LastEditTime: 2024-05-15 19:50:01
  * @Description: 描述
  */
 
@@ -193,3 +193,12 @@ function climbStairs(n) {
 }
 
 console.log("爬楼梯：", climbStairs(4));
+
+function climbStairs2(n, start = 1, total = 1) {
+  if (n <= 2) {
+    return n;
+  }
+  return climbStairs2(n - 1, total, total + start);
+}
+console.log("爬楼梯2：", climbStairs(4));
+
