@@ -2,7 +2,7 @@
  * @Author: yjl
  * @Date: 2024-05-08 17:47:16
  * @LastEditors: yjl
- * @LastEditTime: 2024-05-15 16:30:04
+ * @LastEditTime: 2024-05-15 17:47:52
  * @Description: 描述
  */
 /**
@@ -130,9 +130,9 @@ function query(data) {
 
 /**
  * 简易的封装timeout
- * @param {*} time 
- * @param {*} ms 
- * @param {*} cbk 
+ * @param {*} time
+ * @param {*} ms
+ * @param {*} cbk
  */
 function myTimeout(time, ms = 1000, cbk) {
   let start = +new Date();
@@ -260,6 +260,13 @@ function deepClone(target, hash = new WeakMap()) {
   if (target === null || typeof target !== "object") {
     return target;
   }
+  if (target instanceof RegExp) {
+    return new RegExp(target.source, target.flags);
+  }
+
+  if (target instanceof Date) {
+    return new Date(target.getTime());
+  }
 
   //判断hash中是否有缓存 有的话返回缓存
   if (hash.has(target)) {
@@ -279,6 +286,10 @@ function deepClone(target, hash = new WeakMap()) {
       newTarget[key] = new Set([...value]);
     } else if (value instanceof Map) {
       newTarget[key] = new Map([...value]);
+    } else if (typeof value === "function") {
+      newTarget[key] = function () {
+        return value.apply(this, arguments);
+      };
     } else {
       newTarget[key] = deepClone(value, hash);
     }
@@ -286,7 +297,6 @@ function deepClone(target, hash = new WeakMap()) {
 
   return newTarget;
 }
-
 
 //观察者模式
 class Subject {
@@ -325,3 +335,39 @@ let obs2 = new Observer("obs2", (text) => {
 subject.addObs(obs1);
 subject.addObs(obs2);
 subject.notify("123");
+
+//手写bind
+
+Function.prototype.myBind = function (target, ...args1) {
+  if (typeof this !== "function") {
+    return new TypeError("not a function");
+  }
+  let self = this;
+  let bound = function (...args2) {
+    return self.apply(this instanceof self ? this : target || window, [
+      ...args1,
+      ...args2,
+    ]);
+  };
+  bound.prototype = this.prototype;
+  return bound;
+};
+
+//手写reactive
+function getFun(target, key) {
+  return target[key];
+}
+
+function reacive(obj) {
+  if (typeof obj !== "object" || obj === null) {
+    return TypeError("not a object");
+  }
+
+  return createReactive(obj);
+}
+
+function createReactive(obj) {
+  return new Proxy(obj, {
+    get: getFun,
+  });
+}
