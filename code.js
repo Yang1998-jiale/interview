@@ -1,8 +1,8 @@
 /*
  * @Author: yjl
  * @Date: 2024-05-08 17:47:16
- * @LastEditors: 杨家乐 2018770090@qq.com
- * @LastEditTime: 2024-05-15 21:39:10
+ * @LastEditors: yjl
+ * @LastEditTime: 2024-05-16 16:06:17
  * @Description: 描述
  */
 /**
@@ -273,7 +273,7 @@ function deepClone(target, hash = new WeakMap()) {
     return hash.get(target);
   }
 
-  let newTarget = {};
+  let newTarget = new target.constructor();
   hash.set(target, newTarget);
   let keys = Object.keys(target);
   keys.forEach((key) => {
@@ -497,5 +497,29 @@ list.addNode(1);
 list.addNode(2);
 list.addNode(3);
 list.insetNode(4, 1);
-list.removeNode(2)
+list.removeNode(2);
 console.log(list.printLinkList());
+
+/**
+ * a , b , c
+ * a={} b='name.sex.age' c=10
+ * 输出 a{name:{sex:{age:10}}}
+ */
+
+function setAttr(a, b, c) {
+  if (typeof a !== "object") {
+    return TypeError("第一个参数是对象");
+  }
+  let bSplit = b.split(".");
+  bSplit.reduce((pre, key, index) => {
+    if (index < bSplit.length-1) {
+      pre[key] = {};
+    } else {
+      pre[key] = c;
+    }
+    return pre[key]
+  }, a);
+  return a
+}
+
+console.log(setAttr({},'name.sex.age',10));
