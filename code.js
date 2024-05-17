@@ -2,7 +2,7 @@
  * @Author: yjl
  * @Date: 2024-05-08 17:47:16
  * @LastEditors: yjl
- * @LastEditTime: 2024-05-16 16:06:17
+ * @LastEditTime: 2024-05-17 16:46:06
  * @Description: 描述
  */
 /**
@@ -100,7 +100,7 @@ class Data {
     if (typeof cbk === "function") {
       this.value = this.value.filter(cbk);
     }
-    return this;
+    return new this.constructor(this.value);
   }
 
   execute() {
@@ -512,14 +512,59 @@ function setAttr(a, b, c) {
   }
   let bSplit = b.split(".");
   bSplit.reduce((pre, key, index) => {
-    if (index < bSplit.length-1) {
+    if (index < bSplit.length - 1) {
       pre[key] = {};
     } else {
       pre[key] = c;
     }
-    return pre[key]
+    return pre[key];
   }, a);
-  return a
+  return a;
 }
 
-console.log(setAttr({},'name.sex.age',10));
+// console.log(setAttr({}, "name.sex.age", 10));
+
+function myApply(fn, ...arg) {
+  if (typeof fn !== "function") {
+    return TypeError("第一个参数是函数");
+  }
+  let start = new Date().getTime();
+  let obj = {
+    params: arg,
+    start,
+    status: null,
+    name: fn.name,
+  };
+  let end = null;
+  let promise = new Promise(async (resolve, reject) => {
+    try {
+      let res = await fn.apply(this, arg);
+      resolve(res);
+    } catch (e) {
+      end = new Date().getTime();
+      obj.status = "reject";
+      obj.end = end;
+      reject(e);
+    }
+  });
+
+  return promise.then((res) => {
+    end = new Date().getTime();
+    obj.status = "resolve";
+    obj.end = end;
+    return { res, obj };
+  });
+}
+
+// myApply(setAttr, {}, "name.sex.age", 10).then(({ res, obj }) => {
+//   console.log(res, obj);
+// });
+function addFn() {
+  setTimeout(() => {
+    console.log(123);
+  }, 3000);
+}
+myApply(addFn).then(({ res, obj }) => {
+  console.log(obj);
+  console.log(res);
+});
