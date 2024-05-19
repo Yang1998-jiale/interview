@@ -2,7 +2,7 @@
  * @Author: yjl
  * @Date: 2024-05-08 09:27:38
  * @LastEditors: 杨家乐 2018770090@qq.com
- * @LastEditTime: 2024-05-15 19:50:01
+ * @LastEditTime: 2024-05-17 20:49:24
  * @Description: 描述
  */
 
@@ -53,6 +53,7 @@ function lengthOfLongestSubstring1(s) {
   }
   return res;
 }
+
 function lengthOfLongestSubstring2(s) {
   let res = 0;
   let left = 0;

@@ -2,7 +2,7 @@
  * @Author: yjl
  * @Date: 2024-05-08 17:47:16
  * @LastEditors: 杨家乐 2018770090@qq.com
- * @LastEditTime: 2024-05-15 21:39:10
+ * @LastEditTime: 2024-05-19 17:15:35
  * @Description: 描述
  */
 /**
@@ -401,7 +401,7 @@ console.log(arrFlat.myFlat(Infinity));
 //写一个链表结构'
 class Node {
   constructor(val) {
-    this.val = val;
+    this.value = val;
     this.next = null;
   }
 }
@@ -469,12 +469,12 @@ class LinkList {
       flag.next = target.next;
     }
     this.size--;
-    return target.val;
+    return target.value;
   }
 
   findNode(value) {
     let target = this.head;
-    while (target.val != value && target != null) {
+    while (target.value != value && target != null) {
       target = target.next;
     }
     return target;
@@ -484,11 +484,30 @@ class LinkList {
     let target = this.head;
     let str = "";
     while (target !== null) {
-      console.log(target.val);
-      str += target.val + (target.next == null ? "" : "=>");
+      str += target.value + (target.next == null ? "" : "=>");
       target = target.next;
     }
     return str;
+  }
+  deleteNode(head, value) {
+    if (head.value == value) {
+      head = head.next;
+      return head;
+    }
+    let target = head;
+    let current = head.next;
+
+    while (current !== null) {
+      if (current.value === value) {
+        target.next = current.next;
+        current = null;
+        break;
+      } else {
+        target = current;
+        current = current.next;
+      }
+    }
+    return head;
   }
 }
 
@@ -497,5 +516,405 @@ list.addNode(1);
 list.addNode(2);
 list.addNode(3);
 list.insetNode(4, 1);
-list.removeNode(2)
+// list.removeNode(2);
+// list.deleteNode(list.head, 2);
+console.log(list.head);
+console.log("我是", list.deleteNode(list.head, 2));
 console.log(list.printLinkList());
+
+/**
+ *模拟压缩功能例如 aaabbbccccaaa 输出 a3b3c4a3
+ */
+
+function codeSet(str) {
+  let s = "";
+  let count = 1;
+  for (let i = 0; i < str.length; i++) {
+    console.log(str[i], count);
+    if (str[i] == str[i + 1]) {
+      count++;
+    } else {
+      s += str[i] + count;
+      count = 1;
+    }
+  }
+  return s.length < str.length ? s : str;
+}
+
+console.log(codeSet("abc"));
+
+/**
+ * 手写new
+ */
+function myNew(fn, ...arg) {
+  let obj = Object.create();
+  obj._proto_ = fn.prototype;
+  let result = fn.apply(obj, arg);
+  return typeof result == "object" ? result : obj;
+}
+
+/**
+ * 防抖
+ */
+
+function debounce(fn, timer) {
+  let timeID = null;
+  return function () {
+    if (timeID) {
+      clearTimeout(timeID);
+    }
+    timeID = setTimeout(() => {
+      fn.apply(this, arguments);
+    }, timer);
+  };
+}
+
+/**
+ * 节流
+ */
+function throttle(fn, timer) {
+  let timeID = null;
+  let flag = true;
+  return function () {
+    if (!flag) {
+      return;
+    }
+    flag = false;
+    if (timeID) {
+      clearTimeout(timeID);
+    }
+    timeID = setTimeout(() => {
+      fn.apply(this.arguments);
+      flag = true;
+    }, timer);
+  };
+}
+
+function deepClone2(obj, hash = new WeakMap()) {
+  if (typeof obj !== "object" || obj == null) return obj;
+
+  if (obj instanceof Date) {
+    return new Date(obj.getTime());
+  }
+
+  if (obj instanceof RegExp) {
+    return new RegExp(obj.source, obj.flags);
+  }
+
+  if (obj instanceof Array) {
+    return obj.map((item) => deepClone2(item, hash));
+  }
+
+  if (hash.has(obj)) {
+    return hash.get(obj);
+  }
+
+  let cloneObj = new obj.constructor();
+
+  hash.set(obj, cloneObj);
+  Object.keys(obj).forEach((item) => {
+    let value = obj[item];
+    if (typeof value !== "object" || obj == null) {
+      cloneObj[item] = value;
+    } else if (value instanceof Set) {
+      cloneObj[item] = new Set([...value]);
+    } else if (value instanceof Map) {
+      cloneObj[item] = new Map([...value]);
+    } else if (typeof value == "function") {
+      cloneObj[item] = function () {
+        return value.bind(this, arguments);
+      };
+    } else {
+      cloneObj = deepClone2(value, hash);
+    }
+  });
+}
+
+/**
+ * 一个trans函数,实现数字转汉字
+ */
+function transToChinese(num) {
+  num = num.toString();
+  const numChinese = [
+    "零",
+    "一",
+    "二",
+    "三",
+    "四",
+    "五",
+    "六",
+    "七",
+    "八",
+    "九",
+  ];
+  if (num === "0") {
+    return numChinese[0];
+  }
+  let res = "";
+  const units = ["", "十", "百", "千"];
+  let len = num.length;
+  for (let i = 0; i < len; i++) {
+    let value = Number(num[i]);
+    if (value != 0) {
+      if (num[i - 1] === "0") {
+        res = res + numChinese[0];
+      }
+      res = res + numChinese[value] + units[len - i - 1];
+    }
+  }
+  if (len == 2 && num[0] === "1") {
+    res = res.slice(1);
+  }
+  // console.log(res);
+  return res;
+}
+function trans(num) {
+  let isLose = num < 0;
+  num = Math.abs(num).toString();
+  let res = [];
+  let len = num.length;
+  for (let i = len; i > 0; i -= 4) {
+    res.push(transToChinese(num.slice(Math.max(0, i - 4), i)));
+  }
+  let maxUnits = ["", "万", "亿", "万亿", "亿亿"];
+  for (let i = 0; i < res.length; i++) {
+    if (res[i] == "") {
+      continue;
+    }
+    res[i] += maxUnits[i];
+  }
+  return isLose ? "负" + res.reverse().join("") : res.reverse().join("");
+}
+console.log(trans(-1001001001));
+
+let data1 = [
+  { id: 12, parent_id: 1, name: "朝阳区" },
+  { id: 241, parent_id: 24, name: "田林街道" },
+  { id: 31, parent_id: 3, name: "广州市" },
+  { id: 13, parent_id: 1, name: "昌平区" },
+  { id: 2421, parent_id: 242, name: "上海科技绿洲" },
+  { id: 21, parent_id: 2, name: "静安区" },
+  { id: 242, parent_id: 24, name: "漕河泾街道" },
+  { id: 22, parent_id: 2, name: "黄浦区" },
+  { id: 11, parent_id: 1, name: "顺义区" },
+  { id: 2, parent_id: 0, name: "上海市" },
+  { id: 24, parent_id: 2, name: "徐汇区" },
+  { id: 1, parent_id: 0, name: "北京市" },
+  { id: 2422, parent_id: 242, name: "漕河泾开发区" },
+  { id: 32, parent_id: 3, name: "深圳市" },
+  { id: 33, parent_id: 3, name: "东莞市" },
+  { id: 3, parent_id: 0, name: "广东省" },
+];
+
+function arrToTree(list, root) {
+  let activeList = [];
+  let notList = [];
+  list.forEach((item) => {
+    if (item.parent_id == root) {
+      activeList.push(item);
+    } else {
+      notList.push(item);
+    }
+  });
+  return activeList.map((item) => {
+    return {
+      ...item,
+      children: arrToTree(notList, item.id),
+    };
+  });
+}
+
+console.log(arrToTree(data1, 0));
+
+/**
+ * 去除字符串中出现次数最少的字符并且保持字符串的原有顺序
+ */
+
+function removeStr(str) {
+  let res = [];
+  let resObj = {};
+  for (let i = 0; i < str.length; i++) {
+    if (resObj[str[i]]) {
+      resObj[str[i]]++;
+    } else {
+      resObj[str[i]] = 1;
+    }
+  }
+  let min = Math.min(...Object.values(resObj));
+  for (let i = 0; i < str.length; i++) {
+    if (resObj[str[i]] > min) {
+      res.push(str[i]);
+    }
+  }
+  return res.join("");
+}
+console.log(removeStr("aaabbbcceeff"));
+console.log(removeStr("aaabbabababcceeff"));
+
+/**
+ * 实现一个批量请求函数,要求可以控制并发量
+ */
+
+function myFetch(p, maxLength) {
+  const len = p.length;
+  let res = new Array(len).fill("pedding");
+  let count = 0;
+  return new Promise((resolve) => {
+    // if (count >= maxLength) {
+    // }
+    while (count < maxLength) {
+      next();
+    }
+    function next() {
+      let current = count++;
+      if (current >= len) {
+        if (!res.includes("pedding")) {
+          resolve(res);
+        }
+        return;
+      }
+      let fn = p[current];
+      fn()
+        .then((r) => {
+          res[current] = r;
+          if (current < len) {
+            next();
+          }
+        })
+        .catch((err) => {
+          res[current] = err;
+          if (current < len) {
+            next();
+          }
+        });
+    }
+  });
+}
+let promiseAll = new Array(50).fill({}).map((item, index) => {
+  return () => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(index);
+      }, Math.floor(Math.random() + 1) * 1000);
+    });
+  };
+});
+myFetch(promiseAll, 10).then((res) => {
+  console.log(res);
+});
+
+/**
+ * 树结构转数组(树结构扁平化)
+ */
+
+const listTree = [
+  {
+    id: 1,
+    name: "部门1",
+    pid: 0,
+    children: [
+      {
+        id: 2,
+        name: "部门1-1",
+        pid: 1,
+        children: [
+          {
+            id: 4,
+            name: "部门1-1-1",
+            pid: 2,
+            children: [],
+          },
+        ],
+      },
+      {
+        id: 3,
+        name: "部门1-2",
+        pid: 1,
+        children: [
+          {
+            id: 5,
+            name: "部门1-2-1",
+            pid: 3,
+            children: [],
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 6,
+    name: "部门2",
+    pid: 0,
+    children: [
+      {
+        id: 7,
+        name: "部门2-1",
+        pid: 6,
+        children: [],
+      },
+    ],
+  },
+  {
+    id: 8,
+    name: "部门3",
+    pid: 0,
+    children: [],
+  },
+];
+//reduce递归
+function treeToArr(tree) {
+  return tree.reduce((pre, item) => {
+    let childrenList = [...item.children];
+    delete item.children;
+    if (Array.isArray(childrenList) && childrenList.length) {
+      return [...pre, item, ...treeToArr(childrenList)];
+    } else {
+      return [...pre, item];
+    }
+  }, []);
+}
+
+//广度优先遍历法
+function treeToArr2(tree, className = "children") {
+  let newArr = [...tree];
+  let result = [];
+  while (newArr.length) {
+    let first = newArr.shift();
+    if (Array.isArray(first[className])) {
+      newArr = newArr.concat(first[className]);
+      delete first[className];
+    }
+    result.push(first);
+  }
+  return result;
+}
+console.log(treeToArr(listTree));
+console.log(treeToArr2(listTree));
+
+/**
+ * 删除链表的一个节点
+ */
+function deleteNode(head, value) {
+  if (head.value == value) {
+    head = head.next;
+    return head;
+  }
+  if (head.value == value) {
+    head = head.next;
+    return head;
+  }
+  let target = head;
+  let current = head.next;
+
+  while (current !== null) {
+    if (current.value === value) {
+      target.next = current.next;
+      current = null;
+      break;
+    } else {
+      target = current;
+      current = current.next;
+    }
+  }
+  return head;
+}
