@@ -2,7 +2,7 @@
  * @Author: yjl
  * @Date: 2024-05-08 09:27:38
  * @LastEditors: 杨家乐 2018770090@qq.com
- * @LastEditTime: 2024-05-17 20:49:24
+ * @LastEditTime: 2024-05-19 21:34:44
  * @Description: 描述
  */
 
@@ -203,3 +203,26 @@ function climbStairs2(n, start = 1, total = 1) {
 }
 console.log("爬楼梯2：", climbStairs(4));
 
+/**
+ * 字符串相加
+ * @param {*} num1
+ * @param {*} num2
+ */
+function addStrings(num1, num2) {
+  let len1 = num1.length - 1;
+  let len2 = num2.length - 1;
+  let add = 0;
+  let res = [];
+  while (len1 >= 0 || len2 >= 0 || add != 0) {
+    let x = len1 >= 0 ? num1[len1] - "0" : 0;
+    let y = len2 >= 0 ? num2[len2] - "0" : 0;
+    let result = x + y + add;
+    res.unshift(result % 10);
+    add = Math.floor(result / 10);
+    len1--;
+    len2--;
+  }
+  return res.join("");
+}
+
+console.log(addStrings("123", "457"));

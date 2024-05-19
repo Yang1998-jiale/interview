@@ -2,7 +2,7 @@
  * @Author: yjl
  * @Date: 2024-05-08 17:47:16
  * @LastEditors: 杨家乐 2018770090@qq.com
- * @LastEditTime: 2024-05-19 17:15:35
+ * @LastEditTime: 2024-05-19 21:34:36
  * @Description: 描述
  */
 /**
@@ -100,7 +100,7 @@ class Data {
     if (typeof cbk === "function") {
       this.value = this.value.filter(cbk);
     }
-    return this;
+    return new this.constructor(this.value);
   }
 
   execute() {
@@ -273,7 +273,7 @@ function deepClone(target, hash = new WeakMap()) {
     return hash.get(target);
   }
 
-  let newTarget = {};
+  let newTarget = new target.constructor();
   hash.set(target, newTarget);
   let keys = Object.keys(target);
   keys.forEach((key) => {
@@ -918,3 +918,74 @@ function deleteNode(head, value) {
   }
   return head;
 }
+list.removeNode(2);
+console.log(list.printLinkList());
+
+/**
+ * a , b , c
+ * a={} b='name.sex.age' c=10
+ * 输出 a{name:{sex:{age:10}}}
+ */
+
+function setAttr(a, b, c) {
+  if (typeof a !== "object") {
+    return TypeError("第一个参数是对象");
+  }
+  let bSplit = b.split(".");
+  bSplit.reduce((pre, key, index) => {
+    if (index < bSplit.length - 1) {
+      pre[key] = {};
+    } else {
+      pre[key] = c;
+    }
+    return pre[key];
+  }, a);
+  return a;
+}
+
+// console.log(setAttr({}, "name.sex.age", 10));
+
+function myApply(fn, ...arg) {
+  if (typeof fn !== "function") {
+    return TypeError("第一个参数是函数");
+  }
+  let start = new Date().getTime();
+  let obj = {
+    params: arg,
+    start,
+    status: null,
+    name: fn.name,
+  };
+  let end = null;
+  let promise = new Promise(async (resolve, reject) => {
+    try {
+      let res = await fn.apply(this, arg);
+      resolve(res);
+    } catch (e) {
+      end = new Date().getTime();
+      obj.status = "reject";
+      obj.end = end;
+      reject(e);
+    }
+  });
+
+  return promise.then((res) => {
+    end = new Date().getTime();
+    obj.status = "resolve";
+    obj.end = end;
+    return { res, obj };
+  });
+}
+
+// myApply(setAttr, {}, "name.sex.age", 10).then(({ res, obj }) => {
+//   console.log(res, obj);
+// });
+function addFn() {
+  setTimeout(() => {
+    console.log(123);
+  }, 3000);
+}
+myApply(addFn).then(({ res, obj }) => {
+  console.log(obj);
+  console.log(res);
+});
