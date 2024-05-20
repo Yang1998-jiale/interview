@@ -1,8 +1,8 @@
 /*
  * @Author: yjl
  * @Date: 2024-05-08 09:27:38
- * @LastEditors: 杨家乐 2018770090@qq.com
- * @LastEditTime: 2024-05-19 21:34:44
+ * @LastEditors: yjl
+ * @LastEditTime: 2024-05-20 16:59:19
  * @Description: 描述
  */
 
@@ -177,7 +177,7 @@ console.log("去重排序", unique([1, 9, 3, 6, 12], [0, 2, 10, 3, 12, 12]));
 /**
  * 爬楼梯
  * 描述：每次爬1或2阶，爬n层有多少种爬法
- * 理解：整个算法的本质是一个斐那波契数列,也就是说从第三项开始永远是前两项的和
+ * 理解：整个算法的本质是一个斐波那契数列,也就是说从第三项开始永远是前两项的和
  * @param {*} n 楼梯总数
  */
 function climbStairs(n) {
@@ -226,3 +226,32 @@ function addStrings(num1, num2) {
 }
 
 console.log(addStrings("123", "457"));
+
+function isWin(arr1, arr2) {
+  if (arr1.length != arr2.length) return false;
+  let len = arr1.length;
+  let sum1 = 0;
+  let sum2 = 0;
+  for (let i = 0; i < len; i++) {
+    let arr1Slice = arr1.slice(i > 2 ? i - 2 : 0, i);
+    let arr2Slice = arr2.slice(i > 2 ? i - 2 : 0, i);
+    if (arr1Slice.includes(10)) {
+      sum1 += arr1[i] * 2;
+    } else {
+      sum1 += arr1[i];
+    }
+    if (arr2Slice.includes(10)) {
+      sum2 += arr2[i] * 2;
+    } else {
+      sum2 += arr2[i];
+    }
+    if (arr1[i] == arr2[i]) {
+      continue;
+    }
+    
+  }
+  console.log(sum1,sum2);
+  if(sum1 == sum2) return 0;
+  return sum1 > sum2 ? 1 : 2;
+}
+console.log(isWin([10,10,0], [3,10,6]));

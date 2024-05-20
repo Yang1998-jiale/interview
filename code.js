@@ -1,8 +1,8 @@
 /*
  * @Author: yjl
  * @Date: 2024-05-08 17:47:16
- * @LastEditors: 杨家乐 2018770090@qq.com
- * @LastEditTime: 2024-05-19 21:34:36
+ * @LastEditors: yjl
+ * @LastEditTime: 2024-05-20 17:25:34
  * @Description: 描述
  */
 /**
@@ -97,10 +97,16 @@ class Data {
   }
 
   where(cbk) {
+    let value = this.value;
+    let filterValue = [];
     if (typeof cbk === "function") {
-      this.value = this.value.filter(cbk);
+      for (let i = 0; i < value.length; i++) {
+        if (cbk(value[i])) {
+          filterValue.push(value[i]);
+        }
+      }
     }
-    return new this.constructor(this.value);
+    return new this.constructor(filterValue);
   }
 
   execute() {
@@ -944,7 +950,12 @@ function setAttr(a, b, c) {
 }
 
 // console.log(setAttr({}, "name.sex.age", 10));
-
+/**
+ * 定义一个函数 用来收集目标函数的信息 开始时间 结束时间 名称 参数 返回值 运行状态等
+ * @param {*} fn
+ * @param  {...any} arg
+ * @returns
+ */
 function myApply(fn, ...arg) {
   if (typeof fn !== "function") {
     return TypeError("第一个参数是函数");
@@ -960,32 +971,79 @@ function myApply(fn, ...arg) {
   let promise = new Promise(async (resolve, reject) => {
     try {
       let res = await fn.apply(this, arg);
+      obj.status = "resolve";
       resolve(res);
     } catch (e) {
       end = new Date().getTime();
       obj.status = "reject";
       obj.end = end;
-      reject(e);
+      resolve(e);
     }
   });
 
   return promise.then((res) => {
     end = new Date().getTime();
-    obj.status = "resolve";
     obj.end = end;
     return { res, obj };
   });
 }
 
-// myApply(setAttr, {}, "name.sex.age", 10).then(({ res, obj }) => {
-//   console.log(res, obj);
-// });
 function addFn() {
-  setTimeout(() => {
-    console.log(123);
-  }, 3000);
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      // console.log(123);
+      reject(TypeError("类型错误"));
+    }, 3000);
+  });
 }
-myApply(addFn).then(({ res, obj }) => {
-  console.log(obj);
-  console.log(res);
+myApply(addFn).then((err) => {
+  console.log(err);
 });
+
+// 给一个资源地址,获取其后缀
+function getSuffix(url) {
+  if (typeof url !== "string") {
+    return;
+  }
+  return url.substring(url.lastIndexOf(".") + 1);
+}
+
+/**
+ * 数组去重
+ */
+
+function unique(target) {
+  if (!Array.isArray(target) || target.length < 2) {
+    return target;
+  }
+  let map = new Map();
+  let result = [];
+  target.forEach((item) => {
+    if (!map.has(item)) {
+      map.set(item, 1);
+      result.push(item);
+    }
+  });
+  return result;
+}
+console.log(
+  unique([1, 1, "1", 17, true, true, false, false, "true", "a", {}, {}])
+);
+
+/**
+ * 函数珂理化
+ */
+
+function addfn() {
+  let arg = [...arguments];
+  function fn() {
+    arg.push(...arguments);
+    return fn;
+  }
+
+  fn.toString = function () {
+    return arg.reduce((pre, item) => (pre += item), 0);
+  };
+  return fn;
+}
+console.log(addfn(1)(1, 2, 3)(2) == 9);
