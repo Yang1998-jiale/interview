@@ -2,12 +2,12 @@
  * @Author: yjl
  * @Date: 2024-05-08 09:27:38
  * @LastEditors: yjl
- * @LastEditTime: 2024-05-20 16:59:19
+ * @LastEditTime: 2024-08-20 18:10:42
  * @Description: 描述
  */
 
 /**
- * 两个数之和的下标
+ * 1.两个数之和的下标
  * @param {*} nums
  * @param {*} target
  * @returns
@@ -27,10 +27,10 @@ function toSum(nums, target) {
   return [];
 }
 
-console.log("两个数之和的下标", toSum([2, 7, 11, 15], 9));
+console.log("1.两个数之和的下标:", toSum([2, 7, 11, 15], 9));
 
 /**
- * 找出字符串中无重复字符的最长子串
+ * 3.找出字符串中无重复字符的最长子串
  * @param {*} s
  * @returns
  */
@@ -72,16 +72,16 @@ function lengthOfLongestSubstring2(s) {
   return res;
 }
 console.log(
-  "找出字符串中无重复字符的最长子串fun1:",
+  "3.找出字符串中无重复字符的最长子串fun1:",
   lengthOfLongestSubstring1("abcabcbb")
 );
 console.log(
-  "找出字符串中无重复字符的最长子串fun2:",
+  "3.找出字符串中无重复字符的最长子串fun2:",
   lengthOfLongestSubstring2("abcabcbb")
 );
 
 /**
- * 寻找两个正序数组的中位数
+ * 4.寻找两个正序数组的中位数
  * @param {*} nums1
  * @param {*} nums2
  * @returns
@@ -107,11 +107,11 @@ function findMedianSortedArrays(nums1, nums2) {
   return mid;
 }
 
-console.log("寻找两个正序数组的中位数", findMedianSortedArrays([1, 3], [2]));
-console.log("寻找两个正序数组的中位数", findMedianSortedArrays([1, 3], [2, 4]));
+console.log("4.寻找两个正序数组的中位数:", findMedianSortedArrays([1, 3], [2]));
+console.log("4.寻找两个正序数组的中位数:", findMedianSortedArrays([1, 3], [2, 4]));
 
 /**
- * 找出最长回文字
+ * 5.找出最长回文字
  * @param {*} s
  * @returns
  */
@@ -142,7 +142,7 @@ function longestPalindrome(s) {
   return s.substring(start, start + maxIndex);
 }
 
-console.log("找出最长回文字", longestPalindrome("bananas"));
+console.log("5.找出最长回文字:", longestPalindrome("bananas"));
 
 /**
  * 去重排序
@@ -172,7 +172,7 @@ function unique(arr1, arr2) {
   return fun(all);
 }
 
-console.log("去重排序", unique([1, 9, 3, 6, 12], [0, 2, 10, 3, 12, 12]));
+console.log("去重排序:", unique([1, 9, 3, 6, 12], [0, 2, 10, 3, 12, 12]));
 
 /**
  * 爬楼梯
@@ -225,7 +225,7 @@ function addStrings(num1, num2) {
   return res.join("");
 }
 
-console.log(addStrings("123", "457"));
+console.log("字符串相加:", addStrings("123", "457"));
 
 function isWin(arr1, arr2) {
   if (arr1.length != arr2.length) return false;
@@ -248,10 +248,100 @@ function isWin(arr1, arr2) {
     if (arr1[i] == arr2[i]) {
       continue;
     }
-    
   }
-  console.log(sum1,sum2);
-  if(sum1 == sum2) return 0;
+  if (sum1 == sum2) return 0;
   return sum1 > sum2 ? 1 : 2;
 }
-console.log(isWin([10,10,0], [3,10,6]));
+console.log(isWin([10, 10, 0], [3, 10, 6]));
+
+/**
+ * 6.Z字变形转换
+ * 例:比如输入字符串为 "PAYPALISHIRING" 行数为 3 时，排列如下：
+ * P   A   H   N
+ * A P L S I I G
+ * Y   I   R
+ * 之后，你的输出需要从左往右逐行读取，产生出一个新的字符串，比如："PAHNAPLSIIGYIR"。
+ */
+function convertZ(s, rowNums) {
+  if (rowNums === 1) return s;
+  const rows = new Array(rowNums).fill(""); //创建一个行数为length的数组
+  const n = 2 * (rowNums - 1); //标识 第一行的下标计算是同过个公式计算的得来
+  for (let i = 0; i < s.length; i++) {
+    let x = i % n;
+    rows[Math.min(x, n - x)] += s[i];
+  }
+  return rows.join("");
+}
+console.log("6.Z字变形转换:", convertZ("PAYPALISHIRING", 3));
+
+/**
+ * 7.给你一个 32 位的有符号整数 x ，返回将 x 中的数字部分反转后的结果。
+ * 例: 输入123 输出321
+ * @param {*} target
+ * @returns
+ */
+function reverse(target) {
+  if (target === 0) return target;
+
+  let newT = (target + "").split("");
+  let flag = false;
+  if (newT[0] == "-") {
+    newT = newT.slice(1);
+    flag = true;
+  }
+  let result = newT.reverse().reduce((pre, item) => {
+    return pre != 0 ? pre + item : item != "0" ? item : "";
+  });
+  if (result > 2147483647 || result < -2147483648) return 0;
+  return flag ? "-" + result : result;
+}
+console.log(
+  "7.给你一个 32 位的有符号整数 x ，返回将 x 中的数字部分反转后的结果:",
+  reverse(1534236469)
+);
+
+/**
+ * 8.字符串转换整数 (atoi)
+ * @param {*} target
+ * @returns
+ */
+function myAtoi(target) {
+  target = target.trim();
+  let reg = new RegExp(/[A-Za-z]/);
+  let numReg = new RegExp(/[0-9]/);
+  let reg2 = new RegExp(/[+-]/);
+  let result = "";
+  for (let i = 0; i < target.length; i++) {
+    let s = target[i];
+    if (reg.test(s)) {
+      return result ? getResult(result) : 0;
+    }
+    if (reg2.test(s)) {
+      if (result) {
+        return getResult(result);
+      } else {
+        result += s + "0";
+
+        continue;
+      }
+    }
+
+    if (numReg.test(s)) {
+      result += s;
+    } else {
+      return result ? getResult(result) : 0;
+    }
+  }
+
+  function getResult(res) {
+    return Number(res) < -2147483648
+      ? -2147483648
+      : Number(res) > 2147483647
+      ? 2147483647
+      : Number(res);
+  }
+  return getResult(result);
+}
+console.log("8.字符串转换整数 (atoi):", myAtoi("      -11919730356x"));
+
+/** */
